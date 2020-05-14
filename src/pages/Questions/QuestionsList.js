@@ -47,6 +47,7 @@ function QuestionsList({ onEdit, currentUser }) {
           pageSize: 10,
         }}
         dataSource={questions}
+        rowKey={(item) => item.id}
         renderItem={(item) => (
           <Card
             style={{ width: "100%", marginBottom: "15px" }}

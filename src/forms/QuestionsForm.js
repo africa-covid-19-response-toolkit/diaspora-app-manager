@@ -12,7 +12,7 @@ import {
   Radio,
 } from "antd";
 import { updateQuestion, addQuestion } from "../redux/actions/questions";
-import { isEmpty, find } from "lodash";
+import { omit, find } from "lodash";
 import {
   CheckOutlined,
   CloseOutlined,
@@ -22,7 +22,7 @@ import {
 } from "@ant-design/icons";
 const { Option } = Select;
 
-function QuestionsForm({ onCancel, question }) {
+function QuestionsForm({ onCancel, question, editing }) {
   const [data, setData] = useState({});
   const [saving, setSaving] = useState(false);
   const dispatch = useDispatch();
@@ -41,17 +41,17 @@ function QuestionsForm({ onCancel, question }) {
   }, [onCancel, saveSuccessful]);
 
   useEffect(() => {
-    console.log(question);
     const setQuestion = () => {
       if (question) {
         if (question.text)
           form.setFieldsValue({
+            questionNumber: question.id,
             eng: question.text.eng,
             amh: question.text.amh,
             orm: question.text.orm,
             tig: question.text.tig,
             type: question.type,
-            active: question.active,
+            // active: question.active ? question.active : false,
           });
         setData(question);
       }
@@ -69,7 +69,7 @@ function QuestionsForm({ onCancel, question }) {
         orm,
       },
       type,
-      active: active ? active : false,
+      // active: active ? active : false,
     };
     if (data.actions) questionData = { ...questionData, actions: data.actions };
     if (question.id) {
@@ -96,10 +96,15 @@ function QuestionsForm({ onCancel, question }) {
   };
 
   const removeAction = (key) => {
-    let temp = data;
-    delete temp.actions[key];
-    console.log(temp);
-    setData(temp);
+    // let temp = data;
+    const temp = omit(data.actions, `${key}`);
+    const updatedData = {
+      ...data,
+      actions: temp,
+    };
+    // delete temp.actions[key];
+    // console.log(temp);
+    setData(updatedData);
   };
 
   const addAction = (action) => {
@@ -138,7 +143,13 @@ function QuestionsForm({ onCancel, question }) {
   };
 
   return (
-    <Form colon={false} onFinish={processSave} form={form} noValidate>
+    <Form
+      colon={false}
+      onFinish={processSave}
+      form={form}
+      noValidate
+      layout={"vertical"}
+    >
       <Row>
         <Col>
           <Form.Item
@@ -157,7 +168,8 @@ function QuestionsForm({ onCancel, question }) {
                     find(
                       questions,
                       (o) => o.id === getFieldValue("questionNumber")
-                    )
+                    ) &&
+                    !editing
                   ) {
                     return Promise.reject(
                       "This question number already exists"
@@ -169,12 +181,16 @@ function QuestionsForm({ onCancel, question }) {
               }),
             ]}
           >
-            <Input size="large" placeholder="Question number" />
+            <Input
+              size="large"
+              placeholder="Question number"
+              disabled={question.id ? true : false}
+            />
           </Form.Item>
         </Col>
       </Row>
       <Row>
-        <Col>
+        <Col flex="auto">
           <Form.Item
             label="Text (English)"
             name="eng"
@@ -191,7 +207,7 @@ function QuestionsForm({ onCancel, question }) {
         </Col>
       </Row>
       <Row>
-        <Col>
+        <Col flex="auto">
           <Form.Item
             label="Text (Amharic)"
             name="amh"
@@ -207,7 +223,7 @@ function QuestionsForm({ onCancel, question }) {
         </Col>
       </Row>
       <Row>
-        <Col>
+        <Col flex="auto">
           <Form.Item
             label="Text (Oromifa)"
             name="orm"
@@ -223,46 +239,60 @@ function QuestionsForm({ onCancel, question }) {
         </Col>
       </Row>
       <Row>
-        <Form.Item
-          label="Text (Tigrigna)"
-          name="tig"
-          rules={[
-            {
-              required: false,
-              whitespace: true,
-            },
-          ]}
-        >
-          <Input size="large" placeholder="Text in Tigrigna" />
-        </Form.Item>
+        <Col flex="auto">
+          <Form.Item
+            label="Text (Tigrigna)"
+            name="tig"
+            rules={[
+              {
+                required: false,
+                whitespace: true,
+              },
+            ]}
+          >
+            <Input size="large" placeholder="Text in Tigrigna" />
+          </Form.Item>
+        </Col>
       </Row>
       <Row>
-        <Col>
+        <Col flex="auto">
+          {data.actions && <h2>Actions</h2>}
           <Form.List name="actions">
             {(fields, { add, remove }) => {
               return (
                 <div>
                   {data.actions &&
                     Object.keys(data.actions).map((key) => {
-                      console.log("refershing");
                       return (
                         <>
-                          <h3>{key}</h3>
-                          <EditOutlined
-                            className="dynamic-delete-button"
-                            style={{ margin: "0 8px" }}
-                            onClick={() => {
-                              setSelectedAction(data.actions[key], key);
-                              setVisible(true);
-                            }}
-                          />
-                          <MinusCircleOutlined
-                            className="dynamic-delete-button"
-                            style={{ margin: "0 8px" }}
-                            onClick={() => {
-                              removeAction(key);
-                            }}
-                          />
+                          <Row>
+                            <Col>
+                              <h3>{key}</h3>
+                            </Col>
+                            <Col>
+                              <Form.Item>
+                                <EditOutlined
+                                  className="dynamic-delete-button"
+                                  style={{ margin: "0 8px" }}
+                                  onClick={() => {
+                                    setSelectedAction(data.actions[key], key);
+                                    setVisible(true);
+                                  }}
+                                />
+                              </Form.Item>
+                            </Col>
+                            <Col>
+                              <Form.Item>
+                                <MinusCircleOutlined
+                                  className="dynamic-delete-button"
+                                  style={{ margin: "0 8px" }}
+                                  onClick={() => {
+                                    removeAction(key);
+                                  }}
+                                />
+                              </Form.Item>
+                            </Col>
+                          </Row>
                         </>
                       );
                     })}
@@ -271,6 +301,7 @@ function QuestionsForm({ onCancel, question }) {
                     title="Add a new action"
                     okText="Add"
                     cancelText="Cancel"
+                    maskClosable={false}
                     onCancel={() => {
                       actionForm.resetFields();
                       setVisible(false);
@@ -412,7 +443,7 @@ function QuestionsForm({ onCancel, question }) {
         </Col>
       </Row>
       <Row>
-        <Col>
+        <Col flex="auto">
           <Form.Item
             name="type"
             label="Type of Question"
@@ -431,7 +462,7 @@ function QuestionsForm({ onCancel, question }) {
         </Col>
       </Row>
 
-      <Row gutter={16}>
+      {/* <Row gutter={16}>
         <Col span={12}>
           <Form.Item
             label="Active"
@@ -450,7 +481,7 @@ function QuestionsForm({ onCancel, question }) {
             />
           </Form.Item>
         </Col>
-      </Row>
+      </Row> */}
       <div
         style={{
           position: "absolute",

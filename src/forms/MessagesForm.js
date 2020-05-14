@@ -83,14 +83,7 @@ function MessagesForm({ onCancel, message }) {
       onFinish={processSave}
       form={form}
       noValidate
-      // initialValues={{
-      //   backgroundColor: data.backgroundColor,
-      //   orm: data.text && data.text.orm ? data.text.orm : "",
-      //   amh: data.text && data.text.amh ? data.text.amh : "",
-      //   eng: data.text && data.text.eng ? data.text.eng : "",
-      //   tig: data.text && data.text.tig ? data.text.tig : "",
-      //   active: data.active ? data.active : false,
-      // }}
+      layout={"vertical"}
     >
       <Row>
         <Col>
@@ -109,7 +102,7 @@ function MessagesForm({ onCancel, message }) {
         </Col>
       </Row>
       <Row gutter={16}>
-        <Col>
+        <Col flex="auto">
           <Form.Item
             label="Text (English)"
             name="eng"
@@ -125,7 +118,7 @@ function MessagesForm({ onCancel, message }) {
         </Col>
       </Row>
       <Row>
-        <Col>
+        <Col flex="auto">
           <Form.Item
             label="Text (Amharic)"
             name="amh"
@@ -141,7 +134,7 @@ function MessagesForm({ onCancel, message }) {
         </Col>
       </Row>
       <Row>
-        <Col>
+        <Col flex="auto">
           <Form.Item
             label="Text (Oromifa)"
             name="orm"
@@ -157,21 +150,23 @@ function MessagesForm({ onCancel, message }) {
         </Col>
       </Row>
       <Row>
-        <Form.Item
-          label="Text (Tigrigna)"
-          name="tig"
-          rules={[
-            {
-              required: false,
-              whitespace: true,
-            },
-          ]}
-        >
-          <Input size="large" placeholder="Text in Tigrigna" />
-        </Form.Item>
+        <Col flex="auto">
+          <Form.Item
+            label="Text (Tigrigna)"
+            name="tig"
+            rules={[
+              {
+                required: false,
+                whitespace: true,
+              },
+            ]}
+          >
+            <Input size="large" placeholder="Text in Tigrigna" />
+          </Form.Item>
+        </Col>
       </Row>
 
-      <Row gutter={16}>
+      {/* <Row gutter={16}>
         <Col span={12}>
           <Form.Item
             label="Active"
@@ -190,7 +185,7 @@ function MessagesForm({ onCancel, message }) {
             />
           </Form.Item>
         </Col>
-      </Row>
+      </Row> */}
       <div
         style={{
           position: "absolute",

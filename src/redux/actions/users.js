@@ -136,7 +136,6 @@ export const fetchUserData = (uid) => async (dispatch) => {
       // doc.data() is never undefined for query doc snapshots
       // console.log(doc);
       let data = doc.data();
-      console.log(doc.data(), doc.id, data);
       if (data && doc.id) data["id"] = doc.id;
       dispatch(userDataFetched(data));
       dispatch(fetchUserWorks(doc.id));

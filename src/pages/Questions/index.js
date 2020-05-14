@@ -16,6 +16,7 @@ function Questions() {
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [question, setQuestion] = useState({});
   const [drawerTitle, setDrawerTitle] = useState("Add new question");
+  const [editing, setEditing] = useState(false);
   const { currentUser } = useSelector((store) => store.users);
   const dispatch = useDispatch();
 
@@ -35,10 +36,12 @@ function Questions() {
         onClose={() => {
           setQuestion({});
           setDrawerVisible(false);
+          setEditing(false);
           dispatch(questionsCreationFailed());
         }}
         visible={drawerVisible}
         keyboard={false}
+        maskClosable={false}
       >
         <QuestionsForm
           question={question}
@@ -46,6 +49,7 @@ function Questions() {
             dispatch(questionsCreationFailed());
             setDrawerVisible(false);
           }}
+          editing={editing}
           onDelete={(question) => {
             if (question) {
               //   dispatch(deleteLocation(location));
@@ -86,7 +90,8 @@ function Questions() {
           onEdit={(question) => {
             if (question) {
               setQuestion(question);
-              setDrawerTitle(`Edit - ${question.text.eng}`);
+              setDrawerTitle(`Edit - ${question.id}`);
+              setEditing(true);
               setDrawerVisible(true);
             }
           }}

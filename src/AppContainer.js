@@ -49,7 +49,7 @@ function AppContainer(props) {
           }
         });
       } catch (error) {
-        console.log(error);
+        console.log("App Container", error);
       }
     };
     checkAuthentications();

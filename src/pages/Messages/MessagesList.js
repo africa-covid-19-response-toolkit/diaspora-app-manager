@@ -48,6 +48,7 @@ function MessagesList({ onEdit, currentUser }) {
           pageSize: 10,
         }}
         dataSource={messages}
+        rowKey={(item) => item.id}
         renderItem={(item) => (
           <Card
             style={{ width: "100%", marginBottom: "15px" }}

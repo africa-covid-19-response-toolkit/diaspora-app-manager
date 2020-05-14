@@ -83,21 +83,23 @@ function Messages() {
       </Col>
 
       <Row>
-        <MessagesList
-          onEdit={(message) => {
-            if (message) {
-              setMessage(message);
-              setDrawerTitle(`Edit - ${message.text.eng}`);
-              setDrawerVisible(true);
-            }
-          }}
-          currentUser={currentUser}
-          //   onDelete={location => {
-          //     if (location) {
-          //       dispatch(deleteLocation(location));
-          //     }
-          //   }}
-        />
+        <Col flex="auto">
+          <MessagesList
+            onEdit={(message) => {
+              if (message) {
+                setMessage(message);
+                setDrawerTitle(`Edit - ${message.text.eng}`);
+                setDrawerVisible(true);
+              }
+            }}
+            currentUser={currentUser}
+            //   onDelete={location => {
+            //     if (location) {
+            //       dispatch(deleteLocation(location));
+            //     }
+            //   }}
+          />
+        </Col>
       </Row>
     </Col>
   );

@@ -32,13 +32,11 @@ export const getQuestions = () => async (dispatch) => {
     .onSnapshot((querySnapshot) => {
       let questions = [];
       querySnapshot.forEach(function (doc) {
-        console.log(doc.id, doc.data());
         // doc.data() is never undefined for query doc snapshots
         let question = doc.data();
         question["id"] = doc.id;
         questions.push(question);
       });
-      console.log(questions);
       dispatch(questionsFetched(questions));
     });
 };
