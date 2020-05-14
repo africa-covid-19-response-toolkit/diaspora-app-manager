@@ -1,21 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Form,
-  Input,
-  Button,
-  Row,
-  Col,
-  Select,
-  Switch,
-  Modal,
-  Radio,
-} from "antd";
+import { Form, Input, Button, Row, Col, Select, Modal } from "antd";
 import { updateQuestion, addQuestion } from "../redux/actions/questions";
 import { omit, find } from "lodash";
 import {
-  CheckOutlined,
-  CloseOutlined,
+  // CheckOutlined,
+  // CloseOutlined,
   PlusOutlined,
   MinusCircleOutlined,
   EditOutlined,
@@ -27,7 +17,6 @@ function QuestionsForm({ onCancel, question, editing }) {
   const [saving, setSaving] = useState(false);
   const dispatch = useDispatch();
   const { saveSuccessful, questions } = useSelector((store) => store.questions);
-  const { currentUser } = useSelector((store) => store.users);
   const [visible, setVisible] = useState(false);
   // const [selectedAction, setSelectedAction] = useState(false);
   const [form] = Form.useForm();

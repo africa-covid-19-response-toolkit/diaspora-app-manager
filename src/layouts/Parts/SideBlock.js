@@ -1,24 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { Layout, Menu, Icon, Row } from "antd";
+import { Layout, Menu, Row } from "antd";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUserCog,
-  faHome,
-  faFile,
-  faAward,
-  faBriefcase,
-  faCalendarDay,
-  faChalkboardTeacher,
-  faUserGraduate,
-  faBookReader,
-  faUsers,
-  faSignInAlt,
-  faCommentDots,
-} from "@fortawesome/free-solid-svg-icons";
-
 import {
   HomeOutlined,
   MessageOutlined,
@@ -31,7 +15,7 @@ import routeList from "../../routes";
 function SideBlock({ location, history }) {
   const [currentLocation, setCurrentLocation] = useState("/");
   const collapsed = useSelector((state) => state.layout.sidebarCollapsed);
-  const { currentUser, authenticated, currentUserData } = useSelector(
+  const { authenticated, currentUserData } = useSelector(
     (store) => store.users
   );
 
@@ -57,7 +41,7 @@ function SideBlock({ location, history }) {
           : route.hasMenu && route.enabled && route.name !== "Administration"
       )
       .map((menuItem) => {
-        let menuIcon = faHome;
+        let menuIcon = <HomeOutlined />;
         switch (menuItem.icon) {
           case "home":
             menuIcon = <HomeOutlined />;

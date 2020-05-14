@@ -1,7 +1,6 @@
 import React from "react";
-import { Card, Row, Col, Tag, List, Descriptions } from "antd";
+import { Card, Row, Col, List } from "antd";
 import { useSelector } from "react-redux";
-import moment from "moment";
 import { isEmpty } from "lodash";
 
 import { EditOutlined } from "@ant-design/icons";

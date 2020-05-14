@@ -1,27 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Form,
-  Input,
-  Button,
-  Row,
-  Col,
-  Select,
-  Switch,
-  DatePicker,
-  message,
-} from "antd";
+import { Form, Input, Button, Row, Col } from "antd";
 import { updateMessage, addMessage } from "../redux/actions/messages";
-import moment from "moment";
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
-import { useForm } from "antd/lib/form/util";
+// import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import { ChromePicker } from "react-color";
 
 function MessagesForm({ onCancel, message }) {
   const [data, setData] = useState({});
   const [saving, setSaving] = useState(false);
   const dispatch = useDispatch();
   const saveSuccessful = useSelector((store) => store.messages.saveSuccessful);
-  const { currentUser } = useSelector((store) => store.users);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -49,19 +37,10 @@ function MessagesForm({ onCancel, message }) {
     setMessage();
   }, [form, message]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // validateFields((err, values) => {
-    //   if (!err) {
-    //     if (values) processSave(values);
-    //   }
-    // });
-  };
-
   const processSave = (data) => {
     const { eng, amh, orm, tig } = data;
     data = {
-      backgroundColor: data.backgroundColor,
+      backgroundColor: data.backgroundColor.hex,
       text: {
         eng,
         amh,
@@ -93,11 +72,21 @@ function MessagesForm({ onCancel, message }) {
             rules={[
               {
                 required: false,
-                whitespace: true,
               },
             ]}
           >
-            <Input size="large" placeholder="Background Color" />
+            <ChromePicker
+              color={data.backgroundColor ? data.backgroundColor : "#808080"}
+              onChangeComplete={(color) => {
+                const temp = {
+                  ...data,
+                  backgroundColor: color.hex,
+                };
+                setData(temp);
+                console.log(color);
+              }}
+            />
+            {/* <Input size="large" placeholder="Background Color" /> */}
           </Form.Item>
         </Col>
       </Row>
