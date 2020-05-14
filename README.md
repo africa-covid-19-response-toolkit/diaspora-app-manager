@@ -1,3 +1,26 @@
+# Connect to Firebase
+
+## Web Setup
+
+- On the Firebase console, add a new web application and enter your projects details.
+
+- Got to Firebase Projects settings and select your web app.
+- From the Firebase SDK snippet, select `Config` options.
+- Copy the Firebase config and add it to following location `/src/api/firebase/config/index.js`
+
+```JavaScript
+  const firebaseConfig = {
+    apiKey: "xxx",
+    authDomain: "xxx",
+    databaseURL: "xxx",
+    projectId: "xxx",
+    storageBucket: "xxx",
+    messagingSenderId: "xxx",
+    appId: "xxx",
+    measurementId: "xxx"
+  };
+```
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
