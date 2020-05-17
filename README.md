@@ -1,9 +1,9 @@
 # Connect to Firebase
 
 ## Web Setup
+> <img src="./src/assets/find_firebase_config.png" />
 
 - On the Firebase console, add a new web application and enter your projects details.
-
 - Got to Firebase Projects settings and select your web app.
 - From the Firebase SDK snippet, select `Config` options.
 - Copy the Firebase config and add it to following location `/src/api/firebase/config/index.js`
@@ -26,6 +26,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Available Scripts
 
 In the project directory, you can run:
+
+### `npm install`
+To install the dependencies required to run this app in the `node_modules` folder.
 
 ### `npm start`
 
