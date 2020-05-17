@@ -1,7 +1,7 @@
 # Connect to Firebase
 
 ## Web Setup
-> <img src="./src/assets/find_firebase_config.png" />
+> <img src="./src/assets/find_firebase_config.png" alt="An image showing how to find the config on the firebase console." />
 
 - On the Firebase console, add a new web application and enter your projects details.
 - Got to Firebase Projects settings and select your web app.
