@@ -20,7 +20,8 @@ function QuestionsForm({ onCancel, question, editing }) {
   const [saving, setSaving] = useState(false);
   const dispatch = useDispatch();
   const { saveSuccessful, questions } = useSelector((store) => store.questions);
-  const [visible, setVisible] = useState(false);
+  const [actionVisible, setActionVisible] = useState(false);
+  const [multipleChoiceVisible, setMultipleChoiceVisible] = useState(false);
   // const [selectedAction, setSelectedAction] = useState(false);
   const [form] = Form.useForm();
   const [actionForm] = Form.useForm();
@@ -378,7 +379,7 @@ function QuestionsForm({ onCancel, question, editing }) {
                                   style={{ margin: "0 8px" }}
                                   onClick={() => {
                                     setSelectedAction(data.actions[key], key);
-                                    setVisible(true);
+                                    setActionVisible(true);
                                   }}
                                 />
                               </Form.Item>
@@ -399,21 +400,21 @@ function QuestionsForm({ onCancel, question, editing }) {
                       );
                     })}
                   <Modal
-                    visible={visible}
+                    visible={actionVisible}
                     title="Add a new action"
                     okText="Add"
                     cancelText="Cancel"
                     maskClosable={false}
                     onCancel={() => {
                       actionForm.resetFields();
-                      setVisible(false);
+                      setActionVisible(false);
                     }}
                     onOk={() => {
                       actionForm
                         .validateFields()
                         .then((values) => {
                           addAction(values);
-                          setVisible(false);
+                          setActionVisible(false);
                           actionForm.resetFields();
                         })
                         .catch((info) => {
@@ -517,7 +518,7 @@ function QuestionsForm({ onCancel, question, editing }) {
                     <Button
                       type="dashed"
                       onClick={() => {
-                        setVisible(true);
+                        setActionVisible(true);
                       }}
                       style={{ width: "60%" }}
                     >
@@ -553,7 +554,7 @@ function QuestionsForm({ onCancel, question, editing }) {
                                   style={{ margin: "0 8px" }}
                                   onClick={() => {
                                     setSelectedChoice(choice, index);
-                                    setVisible(true);
+                                    setMultipleChoiceVisible(true);
                                   }}
                                 />
                               </Form.Item>
@@ -574,21 +575,21 @@ function QuestionsForm({ onCancel, question, editing }) {
                       );
                     })}
                   <Modal
-                    visible={visible}
+                    visible={multipleChoiceVisible}
                     title="Add a new multiple choice"
                     okText="Add"
                     cancelText="Cancel"
                     maskClosable={false}
                     onCancel={() => {
                       multipleChoiceForm.resetFields();
-                      setVisible(false);
+                      setMultipleChoiceVisible(false);
                     }}
                     onOk={() => {
                       multipleChoiceForm
                         .validateFields()
                         .then((values) => {
                           addChoice(values);
-                          setVisible(false);
+                          setMultipleChoiceVisible(false);
                           multipleChoiceForm.resetFields();
                         })
                         .catch((info) => {
@@ -680,7 +681,7 @@ function QuestionsForm({ onCancel, question, editing }) {
                     <Button
                       type="dashed"
                       onClick={() => {
-                        setVisible(true);
+                        setMultipleChoiceVisible(true);
                       }}
                       style={{ width: "60%" }}
                     >
