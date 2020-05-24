@@ -62,7 +62,6 @@ function Login(props) {
                 }}
                 addonBefore="Email Address"
                 placeholder="Email Address"
-                // defaultValue="d0d56022@marymount.edu"
               />
             </Col>
           </Row>
@@ -76,7 +75,6 @@ function Login(props) {
                 addonBefore="Password"
                 placeholder="Password"
                 onPressEnter={email && password ? login : null}
-                // defaultValue='123456'
               />
             </Col>
           </Row>

@@ -11,6 +11,7 @@ import {
   EditOutlined,
 } from "@ant-design/icons";
 import ReactJson from "react-json-view";
+import { dateSorter } from "../common/Helpers";
 const { Option } = Select;
 
 const tempJson = { test: "now" };
@@ -68,9 +69,10 @@ function QuestionsForm({ onCancel, question, editing }) {
       type,
       value_key: valueKey,
       next: data.next,
-      // active: active ? active : false,
     };
     if (data.actions) questionData = { ...questionData, actions: data.actions };
+    if (data.multiple_choice)
+      questionData = { ...questionData, multiple_choice: data.multiple_choice };
     if (question.id) {
       dispatch(updateQuestion(question.id, questionData));
     } else dispatch(addQuestion(questionData, questionNumber));
@@ -96,7 +98,7 @@ function QuestionsForm({ onCancel, question, editing }) {
         orm: data.actions[key].text.orm,
         tig: data.actions[key].text.tig,
         order: action.order,
-        value: action.value && Object.keys(action.value)[0],
+        value: data.actions[key].value[data.value_key],
       });
     }
   };
@@ -138,7 +140,7 @@ function QuestionsForm({ onCancel, question, editing }) {
           [action.actionKey]: {
             ...temp.actions[action.actionKey],
             value: {
-              [action.value]: true,
+              [form.getFieldValue("valueKey")]: action.value,
             },
           },
         },
@@ -151,15 +153,15 @@ function QuestionsForm({ onCancel, question, editing }) {
     if (data && data.multiple_choice && data.multiple_choice.length > 0) {
       // console.log(JSON.parse(choice.disabled));
       // console.log(JSON.parse(JSON.stringify(choice.disabled)));
-      console.log(choice.disabled);
-      console.log(JSON.stringify(choice.disabled));
+      console.log(choice, index);
+      console.log(data.multiple_choice);
       multipleChoiceForm.setFieldsValue({
         eng: data.multiple_choice[index].text.eng,
         amh: data.multiple_choice[index].text.amh,
         orm: data.multiple_choice[index].text.orm,
         tig: data.multiple_choice[index].text.tig,
         disabled: data.multiple_choice[index].disabled,
-        value: choice.value && Object.keys(choice.value)[0],
+        value: data.multiple_choice[index].value[data.value_key],
       });
     }
   };
@@ -180,8 +182,49 @@ function QuestionsForm({ onCancel, question, editing }) {
   };
 
   const addChoice = (choice) => {
-    let temp = [];
-    temp = [...data.multiple_choice, choice];
+    let updatedChoices = [];
+    choice = {
+      text: {
+        eng: choice.eng,
+        amh: choice.amh,
+        orm: choice.orm,
+        tig: choice.tig,
+      },
+      value: choice.value,
+    };
+    if (choice.value) {
+      choice = {
+        ...choice,
+        value: {
+          [data.value_key]: choice.value,
+        },
+      };
+    }
+    if (isEmpty(choice.disabled)) {
+      const removeDisabled = omit(choice, `disabled`);
+      choice = removeDisabled;
+    }
+    updatedChoices = data.multiple_choice
+      ? [...data.multiple_choice, choice]
+      : [choice];
+    let temp = {
+      ...data,
+      multiple_choice: updatedChoices,
+    };
+    setData(temp);
+  };
+
+  const disabledOnChange = (e, index) => {
+    let updatedChoices = data.multiple_choice;
+    updatedChoices[index] = {
+      ...updatedChoices[index],
+      disabled: e.updated_src,
+    };
+    const temp = {
+      ...data,
+      multiple_choice: updatedChoices,
+    };
+    console.log(temp);
     setData(temp);
   };
 
@@ -350,6 +393,7 @@ function QuestionsForm({ onCancel, question, editing }) {
             <Select placeholder="Please select type of question">
               <Option value="question">Question</Option>
               <Option value="transfer">Transfer</Option>
+              <Option value="message">Message</Option>
               <Option value="close">Close</Option>
               <Option value="done">Done</Option>
             </Select>
@@ -400,6 +444,7 @@ function QuestionsForm({ onCancel, question, editing }) {
                       );
                     })}
                   <Modal
+                    forceRender={true}
                     visible={actionVisible}
                     title="Add a new action"
                     okText="Add"
@@ -500,7 +545,7 @@ function QuestionsForm({ onCancel, question, editing }) {
                       >
                         <Input />
                       </Form.Item>
-                      {/* <Form.Item
+                      <Form.Item
                         name="value"
                         label="Value"
                         rules={[
@@ -511,7 +556,7 @@ function QuestionsForm({ onCancel, question, editing }) {
                         ]}
                       >
                         <Input />
-                      </Form.Item> */}
+                      </Form.Item>
                     </Form>
                   </Modal>
                   <Form.Item>
@@ -575,6 +620,7 @@ function QuestionsForm({ onCancel, question, editing }) {
                       );
                     })}
                   <Modal
+                    forceRender={true}
                     visible={multipleChoiceVisible}
                     title="Add a new multiple choice"
                     okText="Add"
@@ -652,6 +698,18 @@ function QuestionsForm({ onCancel, question, editing }) {
                         <Input size="large" placeholder="Text in Tigrigna" />
                       </Form.Item>
                       <Form.Item
+                        name="value"
+                        label="Value"
+                        rules={[
+                          {
+                            required: false,
+                            message: "Please input the value of action!",
+                          },
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+                      <Form.Item
                         label="Disabled"
                         name="disabled"
                         rules={[
@@ -668,9 +726,9 @@ function QuestionsForm({ onCancel, question, editing }) {
                               : {}
                           }
                           enableClipboard={false}
-                          onAdd={nextQuestionOnChange}
-                          onEdit={nextQuestionOnChange}
-                          onDelete={nextQuestionOnChange}
+                          onAdd={(e, index) => disabledOnChange(e, index)}
+                          onEdit={(e, index) => disabledOnChange(e, index)}
+                          onDelete={(e, index) => disabledOnChange(e, index)}
                           name={false}
                           theme="monokai"
                         />
@@ -728,48 +786,3 @@ function QuestionsForm({ onCancel, question, editing }) {
 }
 
 export default QuestionsForm;
-
-{
-  /* <Modal
-      visible={visible}
-      title="Create a new collection"
-      okText="Create"
-      cancelText="Cancel"
-      onCancel={onCancel}
-      onOk={() => {
-        form
-          .validateFields()
-          .then(values => {
-            form.resetFields();
-            onCreate(values);
-          })
-          .catch(info => {
-            console.log('Validate Failed:', info);
-          });
-      }}
-    >
-      <Form
-        form={form}
-        layout="vertical"
-        name="form_in_modal"
-        initialValues={{ modifier: 'public' }}
-      >
-        <Form.Item
-          name="title"
-          label="Title"
-          rules={[{ required: true, message: 'Please input the title of collection!' }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item name="description" label="Description">
-          <Input type="textarea" />
-        </Form.Item>
-        <Form.Item name="modifier" className="collection-create-form_last-form-item">
-          <Radio.Group>
-            <Radio value="public">Public</Radio>
-            <Radio value="private">Private</Radio>
-          </Radio.Group>
-        </Form.Item>
-      </Form>
-    </Modal> */
-}
