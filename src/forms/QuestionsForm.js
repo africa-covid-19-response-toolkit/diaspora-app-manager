@@ -39,8 +39,9 @@ function QuestionsForm({ onCancel, question, editing }) {
             amh: question.text.amh,
             orm: question.text.orm,
             tig: question.text.tig,
+            next: question.next,
             type: question.type,
-            // active: question.active ? question.active : false,
+            valueKey: question.value_key,
           });
         setData(question);
       }
@@ -49,7 +50,7 @@ function QuestionsForm({ onCancel, question, editing }) {
   }, [form, question]);
 
   const processSave = (value) => {
-    const { eng, amh, orm, tig, type, active, questionNumber } = value;
+    const { eng, amh, orm, tig, type, next, questionNumber, valueKey } = value;
     let questionData = {
       text: {
         eng,
@@ -58,6 +59,8 @@ function QuestionsForm({ onCancel, question, editing }) {
         orm,
       },
       type,
+      value_key: valueKey,
+      next,
       // active: active ? active : false,
     };
     if (data.actions) questionData = { ...questionData, actions: data.actions };
@@ -73,11 +76,10 @@ function QuestionsForm({ onCancel, question, editing }) {
     if (data && data.actions && data.actions[key]) {
       actionForm.setFieldsValue({
         actionKey: key,
-        eng: data.actions[key].eng,
-        amh: data.actions[key].amh,
-        orm: data.actions[key].orm,
-        tig: data.actions[key].tig,
-        next: action.next,
+        eng: data.actions[key].text.eng,
+        amh: data.actions[key].text.amh,
+        orm: data.actions[key].text.orm,
+        tig: data.actions[key].text.tig,
         order: action.order,
         value: action.value && Object.keys(action.value)[0],
       });
@@ -103,14 +105,13 @@ function QuestionsForm({ onCancel, question, editing }) {
       actions: {
         ...data.actions,
         [action.actionKey]: {
-          label: {
+          text: {
             eng: action.eng,
             amh: action.amh,
             orm: action.orm,
             tig: action.tig,
           },
           order: action.order,
-          next: action.next,
         },
       },
     };
@@ -374,20 +375,6 @@ function QuestionsForm({ onCancel, question, editing }) {
                       >
                         <Input size="large" placeholder="Text in Tigrigna" />
                       </Form.Item>
-
-                      <Form.Item
-                        name="next"
-                        label="Next Question"
-                        rules={[
-                          {
-                            required: false,
-                            message:
-                              "Please input the next question for action!",
-                          },
-                        ]}
-                      >
-                        <Input />
-                      </Form.Item>
                       <Form.Item
                         name="order"
                         label="Order"
@@ -429,6 +416,38 @@ function QuestionsForm({ onCancel, question, editing }) {
               );
             }}
           </Form.List>
+        </Col>
+      </Row>
+      <Row>
+        <Col flex="auto">
+          <Form.Item
+            label="Next"
+            name="next"
+            rules={[
+              {
+                required: false,
+                whitespace: true,
+              },
+            ]}
+          >
+            <Input.TextArea size="large" placeholder="Next JSON instructions" />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col flex="auto">
+          <Form.Item
+            label="Value Key"
+            name="valueKey"
+            rules={[
+              {
+                required: false,
+                whitespace: true,
+              },
+            ]}
+          >
+            <Input size="large" placeholder="Value key for the actions" />
+          </Form.Item>
         </Col>
       </Row>
       <Row>
