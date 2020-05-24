@@ -8,7 +8,7 @@ import { faKey, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 
 function HeaderUserProfile() {
   const [visible, setVisible] = useState(false);
-  const { currentUserData, currentUser } = useSelector(store => store.users);
+  const { currentUserData, currentUser } = useSelector((store) => store.users);
   const dispatch = useDispatch();
 
   const showPasswordModal = () => {
@@ -66,14 +66,16 @@ function HeaderUserProfile() {
       >
         <span style={{ cursor: "pointer" }}>
           {currentUser && (
-            <Avatar size={48} style={{ background: "#1790ff" }}>
-              {`${currentUserData &&
+            <Avatar size={48} style={{ background: "#1890ff" }}>
+              {`${
+                currentUserData &&
                 currentUserData.firstName &&
-                currentUserData.firstName
-                  .charAt(0)
-                  .toUpperCase()}${currentUserData &&
+                currentUserData.firstName.charAt(0).toUpperCase()
+              }${
+                currentUserData &&
                 currentUserData.lastName &&
-                currentUserData.lastName.charAt(0).toUpperCase()}`}
+                currentUserData.lastName.charAt(0).toUpperCase()
+              }`}
             </Avatar>
           )}
         </span>

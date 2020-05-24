@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Form, Input, Button, Row, Col, Select, Modal } from "antd";
 import { updateQuestion, addQuestion } from "../redux/actions/questions";
-import { omit, find } from "lodash";
+import { omit, find, isEmpty, filter } from "lodash";
 import {
   // CheckOutlined,
   // CloseOutlined,
@@ -10,7 +10,10 @@ import {
   MinusCircleOutlined,
   EditOutlined,
 } from "@ant-design/icons";
+import ReactJson from "react-json-view";
 const { Option } = Select;
+
+const tempJson = { test: "now" };
 
 function QuestionsForm({ onCancel, question, editing }) {
   const [data, setData] = useState({});
@@ -21,6 +24,7 @@ function QuestionsForm({ onCancel, question, editing }) {
   // const [selectedAction, setSelectedAction] = useState(false);
   const [form] = Form.useForm();
   const [actionForm] = Form.useForm();
+  const [multipleChoiceForm] = Form.useForm();
 
   useEffect(() => {
     const checkDrawer = () => {
@@ -31,7 +35,7 @@ function QuestionsForm({ onCancel, question, editing }) {
 
   useEffect(() => {
     const setQuestion = () => {
-      if (question) {
+      if (!isEmpty(question)) {
         if (question.text)
           form.setFieldsValue({
             questionNumber: question.id,
@@ -40,6 +44,7 @@ function QuestionsForm({ onCancel, question, editing }) {
             orm: question.text.orm,
             tig: question.text.tig,
             next: question.next,
+            multipleChoice: question.multiple_choice,
             type: question.type,
             valueKey: question.value_key,
           });
@@ -51,6 +56,7 @@ function QuestionsForm({ onCancel, question, editing }) {
 
   const processSave = (value) => {
     const { eng, amh, orm, tig, type, next, questionNumber, valueKey } = value;
+
     let questionData = {
       text: {
         eng,
@@ -60,7 +66,7 @@ function QuestionsForm({ onCancel, question, editing }) {
       },
       type,
       value_key: valueKey,
-      next,
+      next: data.next,
       // active: active ? active : false,
     };
     if (data.actions) questionData = { ...questionData, actions: data.actions };
@@ -71,6 +77,14 @@ function QuestionsForm({ onCancel, question, editing }) {
 
   // Id is is not visible on the form.
   // getFieldDecorator("id", { initialValue: data.id || data._id || "" });
+
+  const nextQuestionOnChange = (e) => {
+    const temp = {
+      ...data,
+      next: JSON.stringify(e.updated_src),
+    };
+    setData(temp);
+  };
 
   const setSelectedAction = (action, key) => {
     if (data && data.actions && data.actions[key]) {
@@ -129,6 +143,44 @@ function QuestionsForm({ onCancel, question, editing }) {
         },
       };
     }
+    setData(temp);
+  };
+
+  const setSelectedChoice = (choice, index) => {
+    if (data && data.multiple_choice && data.multiple_choice.length > 0) {
+      // console.log(JSON.parse(choice.disabled));
+      // console.log(JSON.parse(JSON.stringify(choice.disabled)));
+      console.log(choice.disabled);
+      console.log(JSON.stringify(choice.disabled));
+      multipleChoiceForm.setFieldsValue({
+        eng: data.multiple_choice[index].text.eng,
+        amh: data.multiple_choice[index].text.amh,
+        orm: data.multiple_choice[index].text.orm,
+        tig: data.multiple_choice[index].text.tig,
+        disabled: data.multiple_choice[index].disabled,
+        value: choice.value && Object.keys(choice.value)[0],
+      });
+    }
+  };
+
+  const removeChoice = (index) => {
+    let itemToRemove = data.multiple_choice[index];
+    const temp = filter(
+      data.multiple_choice,
+      (o) => o.text.eng !== itemToRemove.text.eng
+    );
+    const updatedData = {
+      ...data,
+      multiple_choice: temp,
+    };
+    // delete temp.actions[key];
+    // console.log(temp);
+    setData(updatedData);
+  };
+
+  const addChoice = (choice) => {
+    let temp = [];
+    temp = [...data.multiple_choice, choice];
     setData(temp);
   };
 
@@ -246,6 +298,66 @@ function QuestionsForm({ onCancel, question, editing }) {
       </Row>
       <Row>
         <Col flex="auto">
+          <Form.Item
+            label="Next Question Rules"
+            name="next"
+            rules={[
+              {
+                required: false,
+                whitespace: true,
+              },
+            ]}
+          >
+            <ReactJson
+              src={data.next ? JSON.parse(data.next) : {}}
+              enableClipboard={false}
+              onAdd={nextQuestionOnChange}
+              onEdit={nextQuestionOnChange}
+              onDelete={nextQuestionOnChange}
+              name={false}
+              theme="monokai"
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col flex="auto">
+          <Form.Item
+            label="Value Key"
+            name="valueKey"
+            rules={[
+              {
+                required: false,
+                whitespace: true,
+              },
+            ]}
+          >
+            <Input size="large" placeholder="Value key for the actions" />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col flex="auto">
+          <Form.Item
+            name="type"
+            label="Type of Question"
+            hasFeedback
+            rules={[
+              { required: true, message: "Please select type of question" },
+            ]}
+          >
+            <Select placeholder="Please select type of question">
+              <Option value="question">Question</Option>
+              <Option value="transfer">Transfer</Option>
+              <Option value="close">Close</Option>
+              <Option value="done">Done</Option>
+            </Select>
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col flex="auto">
           {data.actions && <h2>Actions</h2>}
           <Form.List name="actions">
             {(fields, { add, remove }) => {
@@ -313,7 +425,7 @@ function QuestionsForm({ onCancel, question, editing }) {
                       form={actionForm}
                       layout="vertical"
                       name="form_in_modal"
-                      initialValues={{ modifier: "public" }}
+                      // initialValues={{ modifier: "public" }}
                     >
                       <Form.Item
                         name="actionKey"
@@ -387,7 +499,7 @@ function QuestionsForm({ onCancel, question, editing }) {
                       >
                         <Input />
                       </Form.Item>
-                      <Form.Item
+                      {/* <Form.Item
                         name="value"
                         label="Value"
                         rules={[
@@ -398,7 +510,7 @@ function QuestionsForm({ onCancel, question, editing }) {
                         ]}
                       >
                         <Input />
-                      </Form.Item>
+                      </Form.Item> */}
                     </Form>
                   </Modal>
                   <Form.Item>
@@ -420,76 +532,167 @@ function QuestionsForm({ onCancel, question, editing }) {
       </Row>
       <Row>
         <Col flex="auto">
-          <Form.Item
-            label="Next"
-            name="next"
-            rules={[
-              {
-                required: false,
-                whitespace: true,
-              },
-            ]}
-          >
-            <Input.TextArea size="large" placeholder="Next JSON instructions" />
-          </Form.Item>
+          {data.multiple_choice && <h2>Multiple Choices</h2>}
+          <Form.List name="actions">
+            {(fields, { add, remove }) => {
+              return (
+                <div>
+                  {data.multiple_choice &&
+                    data.multiple_choice.length > 0 &&
+                    data.multiple_choice.map((choice, index) => {
+                      return (
+                        <>
+                          <Row>
+                            <Col>
+                              <h3>{`Choice ${index}`}</h3>
+                            </Col>
+                            <Col>
+                              <Form.Item>
+                                <EditOutlined
+                                  className="dynamic-delete-button"
+                                  style={{ margin: "0 8px" }}
+                                  onClick={() => {
+                                    setSelectedChoice(choice, index);
+                                    setVisible(true);
+                                  }}
+                                />
+                              </Form.Item>
+                            </Col>
+                            <Col>
+                              <Form.Item>
+                                <MinusCircleOutlined
+                                  className="dynamic-delete-button"
+                                  style={{ margin: "0 8px" }}
+                                  onClick={() => {
+                                    removeChoice(index);
+                                  }}
+                                />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                        </>
+                      );
+                    })}
+                  <Modal
+                    visible={visible}
+                    title="Add a new multiple choice"
+                    okText="Add"
+                    cancelText="Cancel"
+                    maskClosable={false}
+                    onCancel={() => {
+                      multipleChoiceForm.resetFields();
+                      setVisible(false);
+                    }}
+                    onOk={() => {
+                      multipleChoiceForm
+                        .validateFields()
+                        .then((values) => {
+                          addChoice(values);
+                          setVisible(false);
+                          multipleChoiceForm.resetFields();
+                        })
+                        .catch((info) => {
+                          console.log("Validate Failed:", info);
+                        });
+                    }}
+                  >
+                    <Form
+                      form={multipleChoiceForm}
+                      layout="vertical"
+                      name="form_in_modal"
+                      // initialValues={{ modifier: "public" }}
+                    >
+                      <Form.Item
+                        label="Action Text (English)"
+                        name="eng"
+                        rules={[
+                          {
+                            required: false,
+                            whitespace: true,
+                          },
+                        ]}
+                      >
+                        <Input size="large" placeholder="Text in English" />
+                      </Form.Item>
+                      <Form.Item
+                        label="Action Text (Amharic)"
+                        name="amh"
+                        rules={[
+                          {
+                            required: false,
+                            whitespace: true,
+                          },
+                        ]}
+                      >
+                        <Input size="large" placeholder="Text in Amharic" />
+                      </Form.Item>
+                      <Form.Item
+                        label="Action Text (Oromifa)"
+                        name="orm"
+                        rules={[
+                          {
+                            required: false,
+                            whitespace: true,
+                          },
+                        ]}
+                      >
+                        <Input size="large" placeholder="Text in Oromifa" />
+                      </Form.Item>
+                      <Form.Item
+                        label="Action Text (Tigrigna)"
+                        name="tig"
+                        rules={[
+                          {
+                            required: false,
+                            whitespace: true,
+                          },
+                        ]}
+                      >
+                        <Input size="large" placeholder="Text in Tigrigna" />
+                      </Form.Item>
+                      <Form.Item
+                        label="Disabled"
+                        name="disabled"
+                        rules={[
+                          {
+                            required: false,
+                            whitespace: true,
+                          },
+                        ]}
+                      >
+                        <ReactJson
+                          src={
+                            multipleChoiceForm.getFieldValue("disabled")
+                              ? multipleChoiceForm.getFieldValue("disabled")
+                              : {}
+                          }
+                          enableClipboard={false}
+                          onAdd={nextQuestionOnChange}
+                          onEdit={nextQuestionOnChange}
+                          onDelete={nextQuestionOnChange}
+                          name={false}
+                          theme="monokai"
+                        />
+                      </Form.Item>
+                    </Form>
+                  </Modal>
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => {
+                        setVisible(true);
+                      }}
+                      style={{ width: "60%" }}
+                    >
+                      <PlusOutlined /> Add Multiple Choice
+                    </Button>
+                  </Form.Item>
+                </div>
+              );
+            }}
+          </Form.List>
         </Col>
       </Row>
-      <Row>
-        <Col flex="auto">
-          <Form.Item
-            label="Value Key"
-            name="valueKey"
-            rules={[
-              {
-                required: false,
-                whitespace: true,
-              },
-            ]}
-          >
-            <Input size="large" placeholder="Value key for the actions" />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <Col flex="auto">
-          <Form.Item
-            name="type"
-            label="Type of Question"
-            hasFeedback
-            rules={[
-              { required: true, message: "Please select type of question" },
-            ]}
-          >
-            <Select placeholder="Please select type of question">
-              <Option value="question">Question</Option>
-              <Option value="transfer">Transfer</Option>
-              <Option value="close">Close</Option>
-              <Option value="done">Done</Option>
-            </Select>
-          </Form.Item>
-        </Col>
-      </Row>
-
-      {/* <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item
-            label="Active"
-            name="active"
-            valuePropName="checked"
-            rules={[
-              {
-                required: false,
-                whitespace: true,
-              },
-            ]}
-          >
-            <Switch
-              checkedChildren={<CheckOutlined />}
-              unCheckedChildren={<CloseOutlined />}
-            />
-          </Form.Item>
-        </Col>
-      </Row> */}
       <div
         style={{
           position: "absolute",

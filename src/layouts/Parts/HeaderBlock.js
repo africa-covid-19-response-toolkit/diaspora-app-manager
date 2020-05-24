@@ -12,14 +12,14 @@ const HeaderBlock = () => {
   const { currentUser } = useSelector((store) => store.users);
 
   return (
-    <Header style={{ background: "#003c72", padding: "0 20px 0 0" }}>
+    <Header style={{ background: "#007771", padding: "0 20px 0 0" }}>
       <Row type="flex" align="middle" gutter={16}>
         <Col span={18}>
           <div>
             <h1
               style={{
                 textAlign: "center",
-                color: "white",
+                color: "#000000",
                 fontSize: "30px",
               }}
             >
