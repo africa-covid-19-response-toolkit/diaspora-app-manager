@@ -77,9 +77,14 @@ function SideBlock({ location, history }) {
     .filter((p) => p !== "")
     .map((p) => `/${p}`);
   return (
-    <Layout.Sider collapsible collapsed={collapsed} trigger={null}>
+    <Layout.Sider
+      collapsible
+      collapsed={collapsed}
+      trigger={null}
+      style={{ background: "#007771" }}
+    >
       <Row
-        style={{ background: "#003c72", height: "64px", marginBottom: "40px" }}
+        style={{ background: "#007771", height: "64px", marginBottom: "40px" }}
         type="flex"
         align="middle"
         justify="center"
@@ -96,7 +101,11 @@ function SideBlock({ location, history }) {
           </Link>
         )}
       </Row>
-      <Menu theme="dark" selectedKeys={selectedKeys} mode="inline">
+      <Menu
+        style={{ background: "#007771", color: "007771" }}
+        selectedKeys={selectedKeys}
+        mode="inline"
+      >
         {renderMenuItems()}
       </Menu>
     </Layout.Sider>

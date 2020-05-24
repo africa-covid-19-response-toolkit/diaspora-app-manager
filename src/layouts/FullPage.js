@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { Layout } from 'antd';
+import React, { useState } from "react";
+import { Layout } from "antd";
 
 // Layout Parts
-import SideBlock from './Parts/SideBlock';
-import HeaderBlock from './Parts/HeaderBlock';
-import ContentBlock from './Parts/ContentBlock';
+import SideBlock from "./Parts/SideBlock";
+import HeaderBlock from "./Parts/HeaderBlock";
+import ContentBlock from "./Parts/ContentBlock";
 
 function FullPage({ children }) {
   const [collapsed, setCollapsed] = useState(false);
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <SideBlock collapsed={collapsed} />
+    <Layout style={{ minHeight: "100vh" }}>
+      <SideBlock collapsed={collapsed} style={{ background: "#fdd30e" }} />
       <Layout>
-        <HeaderBlock onCollapse={collapsed => setCollapsed(collapsed)} />
+        <HeaderBlock onCollapse={(collapsed) => setCollapsed(collapsed)} />
         <ContentBlock>{children}</ContentBlock>
       </Layout>
     </Layout>
